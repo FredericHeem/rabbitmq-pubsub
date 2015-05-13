@@ -108,7 +108,7 @@ describe('PublisherSubscriber', function() {
         })
         .catch(done);
     });
-    it('should send and receive 10 messages', function(done) {
+    it.skip('should send and receive 10 messages', function(done) {
       debug('should start the mq');
 
       function onIncomingMessage(message) {

@@ -39,7 +39,7 @@
   },
   "scripts": {
     "pretest": "grunt jshint",
-    "test": "NODE_ENV=demo istanbul cover _mocha -- test/*.js",
+    "test": "DEBUG=* NODE_ENV=demo istanbul cover _mocha -- test/*.js",
     "coveralls": "npm run test && coveralls < coverage/lcov.info"
   }
 }

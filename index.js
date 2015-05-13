@@ -1,4 +1,4 @@
 'use strict';
-module.exports = function (str) {
-  console.log(str || 'Rainbow');
+module.exports = function() {
+  require('lib/index');
 };
