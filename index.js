@@ -1,4 +1,2 @@
 'use strict';
-module.exports = function() {
-  require('lib/index');
-};
+module.exports = require('lib/');

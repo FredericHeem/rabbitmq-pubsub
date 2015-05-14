@@ -10,9 +10,7 @@
   },
   "repository": "https://github.com/FredericHeem/rabbitmq-pubsub.git",
   "license": "MIT",
-  "main": [
-    "lib/index.js"
-  ],
+  "main": "lib/index.js",
   "keywords": [
     "rabbitmq-pubsub",
     "rabbitmq publisher subscriber amqp ampqlib"
