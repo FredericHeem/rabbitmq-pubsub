@@ -18,23 +18,17 @@ describe('PublisherSubscriber', function() {
   var publisher;
   var subscriber;
   var publisherOptions = {
-    exchange: 'user.new'
+    exchange: 'user'
   };
 
   var subscriberOptions = {
-    exchange: 'user.new',
+    exchange: 'user',
     queueName: 'user.new'
   };
 
   describe('StartStop', function() {
-    it('should start and stop the publisher', function(done) {
-      publisher = new Publisher(publisherOptions);
-      publisher.start().delay(1e3).then(publisher.stop).then(done,
-        done);
-    });
-
-    it('should start, purge the queue and stop the subscriber',
-      function(done) {
+    
+    it('should start, purge the queue and stop the subscriber', function(done) {
         subscriber = new Subscriber(subscriberOptions);
         subscriber.start()
           .delay(1e3)
@@ -48,11 +42,13 @@ describe('PublisherSubscriber', function() {
       subscriber.stop().then(done, done);
     });
 
-    it('should start and stop the publisher and subscriber', function(
-      done) {
-      publisher = new Publisher({
-        exchange: 'user.new'
-      });
+    it('should purge the queue without start', function(done) {
+      subscriber = new Subscriber(subscriberOptions);
+      subscriber.purgeQueue().then(done, done);
+    });
+
+    it('should start and stop the publisher and subscriber', function(done) {
+      publisher = new Publisher(publisherOptions);
       subscriber = new Subscriber(subscriberOptions);
       Promise.all(
           [
@@ -77,9 +73,7 @@ describe('PublisherSubscriber', function() {
   describe('Subscriber', function() {
     before(function(done) {
       debug('publisher.start()');
-      publisher = new Publisher({
-        exchange: 'user.new'
-      });
+      publisher = new Publisher(publisherOptions);
 
       publisher.start().then(done,
         done);
