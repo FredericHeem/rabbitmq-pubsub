@@ -1,6 +1,6 @@
 {
   "name": "rabbitmq-pubsub",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "RabbitMQ Publisher Subscriber  ",
   "homepage": "https://github.com/FredericHeem/rabbitmq-pubsub",
   "author": {
@@ -10,7 +10,7 @@
   },
   "repository": "https://github.com/FredericHeem/rabbitmq-pubsub.git",
   "license": "MIT",
-  "files": [
+  "main": [
     "lib/index.js"
   ],
   "keywords": [
