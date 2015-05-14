@@ -80,10 +80,17 @@ describe('PublisherSubscriber', function() {
       publisher = new Publisher({
         exchange: 'user.new'
       });
+
       publisher.start().then(done,
         done);
     });
-
+    beforeEach(function(done) {
+      subscriber = new Subscriber(subscriberOptions);
+      done();
+    });
+    afterEach(function(done) {
+      subscriber.purgeQueue().then(subscriber.stop).then(done, done);
+    });
     after(function(done) {
       debug('publisher.stop()');
       publisher.stop().then(done, done);
@@ -101,7 +108,7 @@ describe('PublisherSubscriber', function() {
         subscriber.ack(message);
         done();
       }
-      var subscriber = new Subscriber(subscriberOptions);
+
       subscriber.getEventEmitter().once('message',
         onIncomingMessage);
 
@@ -113,18 +120,40 @@ describe('PublisherSubscriber', function() {
         .catch(done);
     });
 
+    it('should nack the received message', function(done) {
+
+      function onIncomingMessage(message) {
+        debug('onIncomingMessage ', message.fields);
+
+        assert(message);
+        assert(message.content);
+        assert(message.content.length > 0);
+        subscriber.nack(message);
+        done();
+      }
+
+      subscriber.getEventEmitter().once('message',
+        onIncomingMessage);
+
+      subscriber.start()
+        .then(function() {
+          log.debug('started');
+          publisher.publish('', 'Ciao');
+        })
+        .catch(done);
+    });
+
     it('should send and receive 10 messages', function(done) {
       debug('should start the mq');
 
       var numMessage = 0;
       var numMessageToSend = 10;
-      var subscriber = new Subscriber(subscriberOptions);
 
       function onIncomingMessage(message) {
         log.debug('onIncomingMessage ', message.fields);
         subscriber.ack(message);
 
-        if(message.fields.redelivered){
+        if (message.fields.redelivered) {
           log.debug('onIncomingMessage ignoring redelivered');
           return;
         }
@@ -136,7 +165,7 @@ describe('PublisherSubscriber', function() {
           done();
         }
       }
-      
+
       subscriber.getEventEmitter().on('message',
         onIncomingMessage);
 
