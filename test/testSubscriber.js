@@ -27,7 +27,7 @@ describe('PublisherSubscriber', function() {
   };
 
   describe('StartStop', function() {
-    
+
     it('should start, purge the queue and stop the subscriber', function(done) {
         subscriber = new Subscriber(subscriberOptions);
         subscriber.start()
@@ -115,8 +115,7 @@ describe('PublisherSubscriber', function() {
     });
 
     it('should nack the received message', function(done) {
-
-      function onIncomingMessage(message) {
+      subscriber.getEventEmitter().once('message', function onIncomingMessage(message) {
         debug('onIncomingMessage ', message.fields);
 
         assert(message);
@@ -124,10 +123,7 @@ describe('PublisherSubscriber', function() {
         assert(message.content.length > 0);
         subscriber.nack(message);
         done();
-      }
-
-      subscriber.getEventEmitter().once('message',
-        onIncomingMessage);
+      });
 
       subscriber.start()
         .then(function() {

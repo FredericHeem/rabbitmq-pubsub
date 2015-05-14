@@ -1,7 +1,8 @@
-#  [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
-> RabbitMQ Publisher Subscriber  
 
+> RabbitMQ Publisher Subscriber
+
+# [![Test Coverage](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/badges/coverage.svg)](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/coverage) [![Code Climate](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/badges/gpa.svg)](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub)  [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
 ## Install
 
@@ -11,13 +12,48 @@ $ npm install --save rabbitmq-pubsub
 
 
 ## Usage
-
+###Publisher
 ```js
-var rabbitmqPubsub = require('rabbitmq-pubsub');
+var Publisher = require('rabbitmq-pubsub').Publisher;
 
-rabbitmqPubsub('Rainbow');
+var publisherOptions = {
+  exchange: 'user'
+};
+
+var publisher = new Publisher(publisherOptions);
+publisher.start()
+.then(function() {
+  publisher.publish('myRoutingKey', 'Ciao');
+})
+
+
 ```
 
+###Subscriber
+```js
+
+var Subscriber = require('rabbitmq-pubsub').Subscriber;
+var subscriberOptions = {
+	exchange: 'user',
+	queueName: 'user.new'
+};
+
+var subscriber = new Subscriber(subscriberOptions);
+
+subscriber.getEventEmitter().on('message', function onIncomingMessage(message) {
+	debug('onIncomingMessage ', message.fields);
+
+	assert(message);
+	assert(message.content);
+	assert(message.content.length > 0);
+	subscriber.nack(message);
+});
+
+subscriber.start()
+
+
+
+```
 
 ## License
 

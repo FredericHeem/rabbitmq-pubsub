@@ -28,7 +28,15 @@ describe('Publisher', function() {
       publisher = new Publisher(publisherOptions);
       publisher.stop().then(done, done);
     });
+    it('should start and publish', function(done) {
 
+      var publisher = new Publisher(publisherOptions);
+      publisher.start()
+      .then(function() {
+        publisher.publish('myRoutingKey', 'Ciao');
+      })
+      .then(done,done);
+    });
   });
 
 });
