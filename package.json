@@ -21,7 +21,7 @@
     "amqplib": "^0.3.2",
     "bluebird": "^2.9.25",
     "lodash": "^3.8.0",
-    "logfilename": "0.0.7"
+    "logfilename": "0.1.1"
   },
   "devDependencies": {
     "codeclimate-test-reporter": "0.0.4",
@@ -39,7 +39,7 @@
   },
   "scripts": {
     "pretest": "grunt jshint",
-    "test": "DEBUG=* NODE_ENV=demo istanbul cover _mocha -- test/*.js",
+    "test": "NODE_ENV=demo istanbul cover _mocha -- test/*.js",
     "coveralls": "npm run test && coveralls < coverage/lcov.info"
   }
 }

@@ -8,30 +8,34 @@ var Publisher = require('../lib/publisher');
 describe('PublisherSubscriber', function() {
   'use strict';
   this.timeout(15e3);
-  var logOptions = {
+  var log = require('logfilename')(__filename, {
     console: {
       level: 'debug'
     }
-  };
+  });
+
+  log.debug('PublisherSubscriber');
   var publisher;
   var subscriber;
-  var mqOptions = {
+  var publisherOptions = {
+    exchange: 'user.new'
+  };
+
+  var subscriberOptions = {
     exchange: 'user.new',
     queueName: 'user.new'
   };
 
   describe('StartStop', function() {
     it('should start and stop the publisher', function(done) {
-      publisher = new Publisher({
-        exchange: 'user.new'
-      });
+      publisher = new Publisher(publisherOptions);
       publisher.start().delay(1e3).then(publisher.stop).then(done,
         done);
     });
 
     it('should start, purge the queue and stop the subscriber',
       function(done) {
-        subscriber = new Subscriber(mqOptions);
+        subscriber = new Subscriber(subscriberOptions);
         subscriber.start()
           .delay(1e3)
           .then(subscriber.purgeQueue)
@@ -40,7 +44,7 @@ describe('PublisherSubscriber', function() {
       });
 
     it('should stop the subscriber without start', function(done) {
-      subscriber = new Subscriber(mqOptions);
+      subscriber = new Subscriber(subscriberOptions);
       subscriber.stop().then(done, done);
     });
 
@@ -49,7 +53,7 @@ describe('PublisherSubscriber', function() {
       publisher = new Publisher({
         exchange: 'user.new'
       });
-      subscriber = new Subscriber(mqOptions);
+      subscriber = new Subscriber(subscriberOptions);
       Promise.all(
           [
             publisher.start(),
@@ -97,7 +101,7 @@ describe('PublisherSubscriber', function() {
         subscriber.ack(message);
         done();
       }
-      var subscriber = new Subscriber(mqOptions);
+      var subscriber = new Subscriber(subscriberOptions);
       subscriber.getEventEmitter().once('message',
         onIncomingMessage);
 
@@ -108,40 +112,44 @@ describe('PublisherSubscriber', function() {
         })
         .catch(done);
     });
-    it.skip('should send and receive 10 messages', function(done) {
+
+    it('should send and receive 10 messages', function(done) {
       debug('should start the mq');
 
+      var numMessage = 0;
+      var numMessageToSend = 10;
+      var subscriber = new Subscriber(subscriberOptions);
+
       function onIncomingMessage(message) {
-        debug('onIncomingMessage ', message.fields);
+        log.debug('onIncomingMessage ', message.fields);
         subscriber.ack(message);
 
+        if(message.fields.redelivered){
+          log.debug('onIncomingMessage ignoring redelivered');
+          return;
+        }
         numMessage++;
-        debug('onIncomingMessage ', numMessage);
+        log.debug('onIncomingMessage ', numMessage);
         if (numMessage >= numMessageToSend) {
           subscriber.getEventEmitter().removeListener('message',
             onIncomingMessage);
           done();
         }
       }
-
-      var numMessage = 0;
-      var numMessageToSend = 10;
-
-      var subscriber = new Subscriber(mqOptions, logOptions);
+      
       subscriber.getEventEmitter().on('message',
         onIncomingMessage);
 
       subscriber.start()
+        .then(subscriber.purgeQueue)
         .then(function() {
           debug('started');
+
           _.times(numMessageToSend, function(n) {
             publisher.publish('', 'Ciao ' + n);
           });
-
         })
         .catch(done);
-
-
     });
   });
 });
