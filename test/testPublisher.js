@@ -1,6 +1,6 @@
 //var assert = require('assert');
 //var Promise = require('bluebird');
-var Publisher = require('../lib/').Publisher;
+var Publisher = require('../src/').Publisher;
 
 describe('Publisher', function() {
   'use strict';

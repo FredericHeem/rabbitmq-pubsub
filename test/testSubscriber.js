@@ -2,8 +2,8 @@ var assert = require('assert');
 var _ = require('lodash');
 var Promise = require('bluebird');
 var debug = require('debug');
-var Publisher = require('../lib/').Publisher;
-var Subscriber = require('../lib/').Subscriber;
+var Publisher = require('../src/').Publisher;
+var Subscriber = require('../src/').Subscriber;
 
 describe('PublisherSubscriber', function() {
   'use strict';

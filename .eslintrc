@@ -1,0 +1,45 @@
+{
+    "plugins": [
+
+    ],
+    "env": {
+        "browser": false,
+        "es6": true,
+        "node": true,
+        "jquery": false,
+        "mocha": true
+    },
+    "ecmaFeatures": {
+        "arrowFunctions": true,
+        "blockBindings": true,
+        "classes": true,
+        "defaultParams": true,
+        "destructuring": true,
+        "forOf": true,
+        "generators": true,
+        "modules": true,
+        "spread": true,
+        "templateStrings": true
+    },
+    "rules": {
+        "consistent-return": [0],
+        "key-spacing": [0],
+        "quotes": [0, "single", "avoid-escape"],
+        "quote-props": [1, "as-needed"],
+        "new-cap": [0],
+        "no-multi-spaces": [0],
+        "no-shadow": [0],
+        "no-unused-vars": [1],
+        "no-undef": 2,
+        "no-unused-expressions": 0,
+        "no-use-before-define": [2, "nofunc"],
+        "no-trailing-spaces": [1],
+        "eol-last": [0],
+        "no-labels": [2],
+        "indent": [1,2],
+        "no-mixed-spaces-and-tabs": 0,
+        "vars-on-top": 1,
+        "camelcase": [1, {"properties": "never"}],
+        "semi": [1, "always"]
+    }
+}
