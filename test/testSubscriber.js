@@ -32,8 +32,8 @@ describe('PublisherSubscriber', function() {
         subscriber = new Subscriber(subscriberOptions);
         subscriber.start()
           .delay(1e3)
-          .then(subscriber.purgeQueue)
-          .then(subscriber.stop)
+          .then(() => subscriber.purgeQueue())
+          .then(() => subscriber.stop())
           .then(done, done);
       });
 
@@ -83,7 +83,9 @@ describe('PublisherSubscriber', function() {
       done();
     });
     afterEach(function(done) {
-      subscriber.purgeQueue().then(subscriber.stop).then(done, done);
+      subscriber.purgeQueue()
+      .then(() => subscriber.stop())
+      .then(done, done);
     });
     after(function(done) {
       debug('publisher.stop()');
@@ -160,7 +162,7 @@ describe('PublisherSubscriber', function() {
         onIncomingMessage);
 
       subscriber.start()
-        .then(subscriber.purgeQueue)
+        .then(() => subscriber.purgeQueue())
         .then(function() {
           debug('started');
 
