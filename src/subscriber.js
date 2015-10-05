@@ -57,7 +57,7 @@ export default class Subscriber {
         if (this._channel) {
             return await this._channel.close();
         } else {
-            //return Promise.resolve();
+            log.warn('stopping but channel was not opened');
         }
     }
     ack(message) {
@@ -73,8 +73,7 @@ export default class Subscriber {
         if (this._channel) {
             return await this._channel.purgeQueue(this._queue);
         } else {
-            log.error('purgeQueue: channel not opened');
-            //return Promise.resolve();
+            log.warn('purgeQueue: channel not opened');
         }
     }
 }
