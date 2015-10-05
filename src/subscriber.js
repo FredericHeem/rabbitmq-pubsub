@@ -2,14 +2,8 @@
 const amqp = require('amqplib');
 const _ = require('lodash');
 const util = require('util');
-const EventEmitter = require('events').EventEmitter;
 
 let log;
-
-function onIncomingMessage(message) {
-    log.debug('onIncomingMessage ', message.fields);
-    this._eventEmitter.emit('message', message);
-}
 
 export default class Subscriber {
     constructor(options = {}, logOptions) {
@@ -22,18 +16,14 @@ export default class Subscriber {
         }
         this._queue;
         this._channel;
-        this._eventEmitter = new EventEmitter();
         this._options = _.defaults(options, {
             type: 'direct',
             url: 'amqp://localhost'
         });
         log.info('Subscriber options:', util.inspect(this._options));
+    }
 
-    }
-    getEventEmitter() {
-        return this._eventEmitter;
-    }
-    async start() {
+    async start(onIncomingMessage) {
         log.info('start');
 
         let options = this._options;

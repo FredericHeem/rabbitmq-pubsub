@@ -26,6 +26,12 @@ describe('PublisherSubscriber', function() {
     queueName: 'user.new'
   };
 
+  function defaultIncomingMessage(message) {
+    console.log("onIncomingMessage ", message.fields)
+    assert(message.content.length > 0);
+    subscriber.ack(message);
+  }
+
   before(async () => {
     debug('publisher.start()');
     publisher = new Publisher(publisherOptions);
@@ -61,7 +67,7 @@ describe('PublisherSubscriber', function() {
   describe('StartStop', function() {
     it('should start, purge the queue and stop the subscriber', async () => {
         let subscriber = new Subscriber(subscriberOptions);
-        await subscriber.start();
+        await subscriber.start(defaultIncomingMessage);
         await Promise.delay(1e3);
         await subscriber.purgeQueue();
         await subscriber.stop();
@@ -69,7 +75,7 @@ describe('PublisherSubscriber', function() {
 
     it('should stop the subscriber without start', async () => {
       let subscriber = new Subscriber(subscriberOptions);
-      await subscriber.start();
+      await subscriber.stop();
     });
 
     it('should purge the queue without start', async () => {
@@ -83,7 +89,7 @@ describe('PublisherSubscriber', function() {
       await Promise.all(
           [
             publisher.start(),
-            subscriber.start()
+            subscriber.start(defaultIncomingMessage)
           ]);
 
       await Promise.delay(1e3);
@@ -109,43 +115,37 @@ describe('PublisherSubscriber', function() {
 
     it('should receive the published message', async (done) => {
       debug('should start the mq');
-
       function onIncomingMessage(message) {
         debug('onIncomingMessage ', message.fields);
-        console.log("onIncomingMessage ", message.fields)
+
         assert(message);
         assert(message.content);
         assert(message.content.length > 0);
         subscriber.ack(message);
         if(message.fields.redelivered === false){
-          debug('onIncomingMessa done');
           done();
         }
-      }
+      };
 
-      subscriber.getEventEmitter().on('message',
-        onIncomingMessage);
-
-      await subscriber.start();
-      await subscriber.purgeQueue();
-
+      await subscriber.start(onIncomingMessage);
       publisher.publish('', 'Ciao');
     });
 
     it('should nack the received message', async (done) => {
-      subscriber.getEventEmitter().once('message', function onIncomingMessage(message) {
+      function onIncomingMessage(message) {
         debug('onIncomingMessage ', message.fields);
 
         assert(message);
         assert(message.content);
         assert(message.content.length > 0);
         subscriber.nack(message);
-        done();
-      });
+        if(message.fields.redelivered === false){
+          done();
+        }
+      };
 
-      await subscriber.start();
-      publisher.publish('', 'Ciao');
-
+      await subscriber.start(onIncomingMessage);
+      publisher.publish('', 'Ciao nack');
     });
 
     it('should send and receive 10 messages', async (done) => {
@@ -164,16 +164,10 @@ describe('PublisherSubscriber', function() {
         numMessage++;
         log.debug('onIncomingMessage ', numMessage);
         if (numMessage >= numMessageToSend) {
-          subscriber.getEventEmitter().removeListener('message',
-            onIncomingMessage);
           done();
         }
       }
-
-      subscriber.getEventEmitter().on('message',
-        onIncomingMessage);
-
-      await subscriber.start();
+      await subscriber.start(onIncomingMessage);
       await subscriber.purgeQueue();
       _.times(numMessageToSend, function(n) {
         publisher.publish('', 'Ciao ' + n);
