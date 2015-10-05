@@ -9,6 +9,9 @@ let log;
 export default class Publisher {
     constructor(options = {}, logOptions) {
         log = require('logfilename')(__filename, logOptions);
+        if(!options.exchange){
+            throw new Error('exchange parameter missing in options');
+        }
         this._options = _.defaults(options, {
             type: 'direct',
             url: 'amqp://localhost'

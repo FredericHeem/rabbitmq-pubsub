@@ -14,6 +14,12 @@ function onIncomingMessage(message) {
 export default class Subscriber {
     constructor(options = {}, logOptions) {
         log = require('logfilename')(__filename, logOptions);
+        if(!options.exchange){
+            throw new Error('exchange parameter missing in options');
+        }
+        if(!options.queueName){
+            throw new Error('queueName parameter missing in options');
+        }
         this._queue;
         this._channel;
         this._eventEmitter = new EventEmitter();

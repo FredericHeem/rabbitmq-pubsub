@@ -37,6 +37,27 @@ describe('PublisherSubscriber', function() {
     await publisher.stop();
   });
 
+  describe('Invalid Constructor', function() {
+    it('no options', done => {
+      (function(){
+        new Subscriber()
+      }).should.throw();
+      done();
+    });
+    it('no exchange options', done => {
+      (function(){
+        new Subscriber({})
+      }).should.throw();
+      done();
+    });
+    it('no queueName options', done => {
+      (function(){
+        new Subscriber({exchange:'user'})
+      }).should.throw();
+      done();
+    });
+  });
+
   describe('StartStop', function() {
     it('should start, purge the queue and stop the subscriber', async () => {
         let subscriber = new Subscriber(subscriberOptions);
