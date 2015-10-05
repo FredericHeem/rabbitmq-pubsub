@@ -2,6 +2,8 @@
 
 > RabbitMQ Publisher Subscriber
 
+A promise based API on top of [ampqlib](http://www.squaremobius.net/amqp.node/).
+
 # [![Test Coverage](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/badges/coverage.svg)](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/coverage) [![Code Climate](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/badges/gpa.svg)](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub)  [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Dependency Status][daviddm-image]][daviddm-url]
 
 ## Install
@@ -12,12 +14,14 @@ $ npm install --save rabbitmq-pubsub
 
 
 ## Usage
-###Publisher
+### Publisher
 ```js
 var Publisher = require('rabbitmq-pubsub').Publisher;
 
 var publisherOptions = {
-  exchange: 'user'
+  exchange: 'user',
+  type: 'direct',
+  url: 'amqp://localhost'
 };
 
 var publisher = new Publisher(publisherOptions);
@@ -26,10 +30,9 @@ publisher.start()
   publisher.publish('myRoutingKey', 'Ciao');
 })
 
-
 ```
 
-###Subscriber
+### Subscriber
 ```js
 
 var Subscriber = require('rabbitmq-pubsub').Subscriber;
@@ -54,6 +57,10 @@ subscriber.start()
 
 
 ```
+
+## Test
+
+    $ npm test
 
 ## License
 
