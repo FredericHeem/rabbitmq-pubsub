@@ -112,18 +112,23 @@ describe('PublisherSubscriber', function() {
 
       function onIncomingMessage(message) {
         debug('onIncomingMessage ', message.fields);
-
+        console.log("onIncomingMessage ", message.fields)
         assert(message);
         assert(message.content);
         assert(message.content.length > 0);
         subscriber.ack(message);
-        done();
+        if(message.fields.redelivered === false){
+          debug('onIncomingMessa done');
+          done();
+        }
       }
 
-      subscriber.getEventEmitter().once('message',
+      subscriber.getEventEmitter().on('message',
         onIncomingMessage);
 
       await subscriber.start();
+      await subscriber.purgeQueue();
+
       publisher.publish('', 'Ciao');
     });
 
