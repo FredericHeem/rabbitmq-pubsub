@@ -60,6 +60,8 @@ subscriber.start()
 
 ## Test
 
+Make sure the rabbitmq server is running locally before running the test
+
     $ npm test
 
 ## License

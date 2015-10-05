@@ -7,34 +7,29 @@ const util = require('util');
 let log;
 
 export default class Publisher {
-    constructor(options, logOptions) {
+    constructor(options = {}, logOptions) {
         log = require('logfilename')(__filename, logOptions);
-        let _channel;
-        this._options = options || {};
         this._options = _.defaults(options, {
             type: 'direct',
             url: 'amqp://localhost'
         });
         log.info('Publisher options:', util.inspect(this._options));
     }
-    start() {
+    async start() {
         let options = this._options;
         log.info('start ', util.inspect(options));
-        return amqp.connect(options.url).then(conn => {
-            log.info('connected to mq');
-            return conn.createChannel();
-        }).then(ch => {
-            log.info('connected to channel');
-            this._channel = ch;
-            return ch.assertExchange(options.exchange, options.type, { durable: true });
-        }).then(res => {
-            log.info('connected ', res);
-        });
+        let connection = await amqp.connect(options.url);
+        log.info('connected to mq');
+        this._channel = await connection.createChannel();
+        log.info('connected to channel');
+        let res = await this._channel.assertExchange(options.exchange, options.type, { durable: true });
+        log.info('connected ', res);
     }
-    stop() {
+
+    async stop() {
         log.info('stop');
         if (this._channel) {
-            return this._channel.close();
+            return await this._channel.close();
         } else {
             return Promise.resolve();
         }

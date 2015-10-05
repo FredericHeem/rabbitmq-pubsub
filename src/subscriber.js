@@ -13,7 +13,7 @@ function onIncomingMessage(message) {
 }
 
 export default class Subscriber {
-    constructor(options, logOptions) {
+    constructor(options = {}, logOptions) {
         log = require('logfilename')(__filename, logOptions);
         this._queue;
         this._channel;
@@ -28,37 +28,27 @@ export default class Subscriber {
     getEventEmitter() {
         return this._eventEmitter;
     }
-    start() {
+    async start() {
         log.info('start');
+
         let options = this._options;
-        return amqp.connect(options.url).then(conn => {
-            log.info('createChannel');
-            return conn.createChannel();
-        }).then(channel => {
-            this._channel = channel;
-            log.info('assertExchange ', options.exchange);
-            return channel.assertExchange(options.exchange, options.type, { durable: true });
-        }).then(() => {
-            log.info('assertQueue name: ', options.queueName);
-            return this._channel.assertQueue(options.queueName, { exclusive: false });
-        }).then(res => {
-            log.info('bind queue %s, key: %s', res.queue, options.key);
-            this._queue = res.queue;
-            return this._channel.bindQueue(this._queue, options.exchange, options.key);
-        }).then(() => {
-            //TODO ack
-            this._channel.prefetch(1);
-            return this._channel.consume(this._queue, onIncomingMessage.bind(this));
-        }).then(() => {
-            log.info('started');
-        });
+        let connection = await amqp.connect(options.url);
+        log.info('createChannel');
+        this._channel = await connection.createChannel();
+        log.info('assertExchange ', options.exchange);
+        let result = await this._channel.assertExchange(options.exchange, options.type, { durable: true });
+        this._queue = result.queue;
+        await this._channel.bindQueue(this._queue, options.exchange, options.key);
+        this._channel.prefetch(1);
+        await this._channel.consume(this._queue, onIncomingMessage.bind(this));
+        log.info('started');
     }
-    stop() {
+    async stop() {
         log.info('stop');
         if (this._channel) {
-            return this._channel.close();
+            return await this._channel.close();
         } else {
-            return Promise.resolve();
+            //return Promise.resolve();
         }
     }
     ack(message) {
@@ -69,13 +59,13 @@ export default class Subscriber {
         log.debug('nack');
         this._channel.nack(message);
     }
-    purgeQueue() {
+    async purgeQueue() {
         log.info('purgeQueue ', this._queue);
         if (this._channel) {
-            return this._channel.purgeQueue(this._queue);
+            return await this._channel.purgeQueue(this._queue);
         } else {
             log.error('purgeQueue: channel not opened');
-            return Promise.resolve();
+            //return Promise.resolve();
         }
     }
 }

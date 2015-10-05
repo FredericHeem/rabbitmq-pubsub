@@ -1,3 +1,4 @@
+import 'mochawait';
 var assert = require('assert');
 var _ = require('lodash');
 var Promise = require('bluebird');
@@ -8,91 +9,84 @@ var Subscriber = require('../src/').Subscriber;
 describe('PublisherSubscriber', function() {
   'use strict';
   this.timeout(15e3);
-  var log = require('logfilename')(__filename, {
+  let log = require('logfilename')(__filename, {
     console: {
       level: 'debug'
     }
   });
 
   log.debug('PublisherSubscriber');
-  var publisher;
-  var subscriber;
-  var publisherOptions = {
+  let publisher;
+  let subscriber
+  let publisherOptions = {
     exchange: 'user'
   };
 
-  var subscriberOptions = {
+  let subscriberOptions = {
     exchange: 'user',
     queueName: 'user.new'
   };
 
   describe('StartStop', function() {
 
-    it('should start, purge the queue and stop the subscriber', function(done) {
-        subscriber = new Subscriber(subscriberOptions);
-        subscriber.start()
-          .delay(1e3)
-          .then(() => subscriber.purgeQueue())
-          .then(() => subscriber.stop())
-          .then(done, done);
+    it('should start, purge the queue and stop the subscriber', async () => {
+        let subscriber = new Subscriber(subscriberOptions);
+        await subscriber.start();
+        await Promise.delay(1e3);
+        await subscriber.purgeQueue();
+        await subscriber.stop();
       });
 
-    it('should stop the subscriber without start', function(done) {
-      subscriber = new Subscriber(subscriberOptions);
-      subscriber.stop().then(done, done);
+    it('should stop the subscriber without start', async () => {
+      let subscriber = new Subscriber(subscriberOptions);
+      await subscriber.start();
     });
 
-    it('should purge the queue without start', function(done) {
-      subscriber = new Subscriber(subscriberOptions);
-      subscriber.purgeQueue().then(done, done);
+    it('should purge the queue without start', async () => {
+      let subscriber = new Subscriber(subscriberOptions);
+      await subscriber.purgeQueue();
     });
 
-    it('should start and stop the publisher and subscriber', function(done) {
-      publisher = new Publisher(publisherOptions);
-      subscriber = new Subscriber(subscriberOptions);
-      Promise.all(
+    it('should start and stop the publisher and subscriber', async () => {
+      let publisher = new Publisher(publisherOptions);
+      let subscriber = new Subscriber(subscriberOptions);
+      await Promise.all(
           [
             publisher.start(),
             subscriber.start()
-          ])
-        .delay(1e3)
-        .then(function() {
-          return Promise.all(
+          ]);
+
+      await Promise.delay(1e3);
+
+      await Promise.all(
             [
               publisher.stop(),
               subscriber.stop()
             ]);
         })
-        .then(function() {
-
-        })
-        .then(done, done);
     });
   });
 
   describe('Subscriber', function() {
-    before(function(done) {
+    before(async () => {
       debug('publisher.start()');
       publisher = new Publisher(publisherOptions);
-
-      publisher.start().then(done,
-        done);
+      await publisher.start();
     });
-    beforeEach(function(done) {
+    beforeEach(function() {
       subscriber = new Subscriber(subscriberOptions);
-      done();
     });
-    afterEach(function(done) {
+    afterEach(async () => {
       subscriber.purgeQueue()
       .then(() => subscriber.stop())
       .then(done, done);
     });
-    after(function(done) {
+    after(async () => {
       debug('publisher.stop()');
       publisher.stop().then(done, done);
     });
 
-    it('should receive the published message', function(done) {
+    it('should receive the published message', async () => {
       debug('should start the mq');
 
       function onIncomingMessage(message) {
@@ -116,7 +110,7 @@ describe('PublisherSubscriber', function() {
         .catch(done);
     });
 
-    it('should nack the received message', function(done) {
+    it('should nack the received message', async () => {
       subscriber.getEventEmitter().once('message', function onIncomingMessage(message) {
         debug('onIncomingMessage ', message.fields);
 
@@ -135,7 +129,7 @@ describe('PublisherSubscriber', function() {
         .catch(done);
     });
 
-    it('should send and receive 10 messages', function(done) {
+    it('should send and receive 10 messages', async () => {
       debug('should start the mq');
 
       var numMessage = 0;

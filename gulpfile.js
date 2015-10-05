@@ -13,7 +13,7 @@ gulp.task( 'default', [ 'build' ] );
 
 gulp.task('build', function () {
     return gulp.src(paths.scripts)
-        .pipe(babel())
+        .pipe(babel({ stage: 1 }))
         .pipe(gulp.dest(paths.build));
 });
 

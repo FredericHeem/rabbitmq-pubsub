@@ -23,11 +23,12 @@
     "run-sequence": "^1.1.4"
   },
   "devDependencies": {
-    "codeclimate-test-reporter": "0.0.4",
-    "debug": "^2.2.0",
     "babel-core": "^5.8.24",
+    "babel-eslint": "^4.1.3",
     "babel-loader": "^5.3.2",
     "babel-runtime": "^5.8.24",
+    "codeclimate-test-reporter": "0.0.4",
+    "debug": "^2.2.0",
     "eslint": "^1.5.1",
     "gulp": "3.9.0",
     "gulp-babel": "^5.2.1",
@@ -37,7 +38,8 @@
     "gulp-nodemon": "^2.0.4",
     "gulp-util": "3.0.6",
     "istanbul": "~0.3.6",
-    "mocha": "^2.2.4"
+    "mocha": "^2.2.4",
+    "mochawait": "^2.0.1"
   },
   "scripts": {
     "build": "./node_modules/.bin/gulp build",
