@@ -43,17 +43,19 @@ var subscriberOptions = {
 
 var subscriber = new Subscriber(subscriberOptions);
 
-subscriber.getEventEmitter().on('message', function onIncomingMessage(message) {
-	debug('onIncomingMessage ', message.fields);
+function onIncomingMessage(message) {
+  debug('onIncomingMessage ', message.fields);
 
-	assert(message);
-	assert(message.content);
-	assert(message.content.length > 0);
-	subscriber.nack(message);
-});
+  assert(message);
+  assert(message.content);
+  assert(message.content.length > 0);
 
-subscriber.start()
+  subscriber.ack(message);
+  
+  //subscriber.nack(message);
+};
 
+subscriber.start(onIncomingMessage)
 
 
 ```
