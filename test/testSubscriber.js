@@ -15,7 +15,6 @@ describe('PublisherSubscriber', function() {
     }
   });
 
-  log.debug('PublisherSubscriber');
   let publisher;
   let subscriber
   let publisherOptions = {
@@ -27,8 +26,18 @@ describe('PublisherSubscriber', function() {
     queueName: 'user.new'
   };
 
-  describe('StartStop', function() {
+  before(async () => {
+    debug('publisher.start()');
+    publisher = new Publisher(publisherOptions);
+    await publisher.start();
+  });
 
+  after(async () => {
+    debug('publisher.stop()');
+    await publisher.stop();
+  });
+
+  describe('StartStop', function() {
     it('should start, purge the queue and stop the subscriber', async () => {
         let subscriber = new Subscriber(subscriberOptions);
         await subscriber.start();
@@ -63,30 +72,21 @@ describe('PublisherSubscriber', function() {
               publisher.stop(),
               subscriber.stop()
             ]);
-        })
+
     });
   });
 
+
   describe('Subscriber', function() {
-    before(async () => {
-      debug('publisher.start()');
-      publisher = new Publisher(publisherOptions);
-      await publisher.start();
-    });
-    beforeEach(function() {
+    beforeEach(async () => {
       subscriber = new Subscriber(subscriberOptions);
     });
     afterEach(async () => {
-      subscriber.purgeQueue()
-      .then(() => subscriber.stop())
-      .then(done, done);
-    });
-    after(async () => {
-      debug('publisher.stop()');
-      publisher.stop().then(done, done);
+      await subscriber.purgeQueue();
+      await subscriber.stop();
     });
 
-    it('should receive the published message', async () => {
+    it('should receive the published message', async (done) => {
       debug('should start the mq');
 
       function onIncomingMessage(message) {
@@ -102,15 +102,11 @@ describe('PublisherSubscriber', function() {
       subscriber.getEventEmitter().once('message',
         onIncomingMessage);
 
-      subscriber.start()
-        .then(function() {
-          debug('started');
-          publisher.publish('', 'Ciao');
-        })
-        .catch(done);
+      await subscriber.start();
+      publisher.publish('', 'Ciao');
     });
 
-    it('should nack the received message', async () => {
+    it('should nack the received message', async (done) => {
       subscriber.getEventEmitter().once('message', function onIncomingMessage(message) {
         debug('onIncomingMessage ', message.fields);
 
@@ -121,19 +117,15 @@ describe('PublisherSubscriber', function() {
         done();
       });
 
-      subscriber.start()
-        .then(function() {
-          log.debug('started');
-          publisher.publish('', 'Ciao');
-        })
-        .catch(done);
+      await subscriber.start();
+      publisher.publish('', 'Ciao');
+
     });
 
-    it('should send and receive 10 messages', async () => {
+    it('should send and receive 10 messages', async (done) => {
+      let numMessage = 0;
+      let numMessageToSend = 10;
       debug('should start the mq');
-
-      var numMessage = 0;
-      var numMessageToSend = 10;
 
       function onIncomingMessage(message) {
         log.debug('onIncomingMessage ', message.fields);
@@ -155,16 +147,11 @@ describe('PublisherSubscriber', function() {
       subscriber.getEventEmitter().on('message',
         onIncomingMessage);
 
-      subscriber.start()
-        .then(() => subscriber.purgeQueue())
-        .then(function() {
-          debug('started');
-
-          _.times(numMessageToSend, function(n) {
-            publisher.publish('', 'Ciao ' + n);
-          });
-        })
-        .catch(done);
+      await subscriber.start();
+      await subscriber.purgeQueue();
+      _.times(numMessageToSend, function(n) {
+        publisher.publish('', 'Ciao ' + n);
+      });
     });
   });
 });

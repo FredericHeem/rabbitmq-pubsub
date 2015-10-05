@@ -1,5 +1,4 @@
 'use strict';
-const Promise = require('bluebird');
 const amqp = require('amqplib');
 const _ = require('lodash');
 const util = require('util');
@@ -36,9 +35,13 @@ export default class Subscriber {
         log.info('createChannel');
         this._channel = await connection.createChannel();
         log.info('assertExchange ', options.exchange);
-        let result = await this._channel.assertExchange(options.exchange, options.type, { durable: true });
+        await this._channel.assertExchange(options.exchange, options.type, { durable: true });
+        log.info('assertQueue name: ', options.queueName);
+        let result = this._channel.assertQueue(options.queueName, { exclusive: false });
         this._queue = result.queue;
+        log.info('bindQueue ', this._queue);
         await this._channel.bindQueue(this._queue, options.exchange, options.key);
+        log.info('prefetch and consume');
         this._channel.prefetch(1);
         await this._channel.consume(this._queue, onIncomingMessage.bind(this));
         log.info('started');
