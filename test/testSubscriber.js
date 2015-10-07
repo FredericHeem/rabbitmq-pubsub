@@ -16,7 +16,7 @@ describe('PublisherSubscriber', function() {
   });
 
   let publisher;
-  let subscriber
+  let subscriber;
   let publisherOptions = {
     exchange: 'user'
   };
@@ -27,7 +27,7 @@ describe('PublisherSubscriber', function() {
   };
 
   function defaultIncomingMessage(message) {
-    console.log("onIncomingMessage ", message.fields)
+    //console.log("onIncomingMessage ", message.fields);
     assert(message.content.length > 0);
     subscriber.ack(message);
   }
@@ -46,7 +46,7 @@ describe('PublisherSubscriber', function() {
   describe('Invalid Constructor', function() {
     it('no options', done => {
       (function(){
-        new Subscriber()
+        new Subscriber();
       }).should.throw();
       done();
     });
@@ -58,7 +58,7 @@ describe('PublisherSubscriber', function() {
     });
     it('no queueName options', done => {
       (function(){
-        new Subscriber({exchange:'user'})
+        new Subscriber({exchange:'user'});
       }).should.throw();
       done();
     });
