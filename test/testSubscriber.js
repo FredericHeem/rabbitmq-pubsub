@@ -113,7 +113,7 @@ describe('PublisherSubscriber', function() {
       await subscriber.stop();
     });
 
-    it('should receive the published message with no routing key', async (done) => {
+    it.skip('should receive the published message with no routing key', async (done) => {
       debug('should start the mq');
       function onIncomingMessage(message) {
         console.log('onIncomingMessage ', message.fields);
