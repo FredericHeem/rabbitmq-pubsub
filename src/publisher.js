@@ -37,8 +37,8 @@ export default class Publisher {
             return Promise.resolve();
         }
     }
-    publish(key, message) {
+    async publish(key, message) {
         log.info('publish exchange:%s, key:%s, message ', this._options.exchange, key, message);
-        this._channel.publish(this._options.exchange, key, new Buffer(message));
+        return this._channel.publish(this._options.exchange, key, new Buffer(message));
     }
 }

@@ -116,7 +116,7 @@ describe('PublisherSubscriber', function() {
     it('should receive the published message', async (done) => {
       debug('should start the mq');
       function onIncomingMessage(message) {
-        debug('onIncomingMessage ', message.fields);
+        console.log('onIncomingMessage ', message.fields);
 
         assert(message);
         assert(message.content);
@@ -128,7 +128,7 @@ describe('PublisherSubscriber', function() {
       };
 
       await subscriber.start(onIncomingMessage);
-      publisher.publish('', 'Ciao');
+      publisher.publish(subscriberOptions.queueName, 'Ciao');
     });
 
     it('should nack the received message', async (done) => {
@@ -145,7 +145,7 @@ describe('PublisherSubscriber', function() {
       };
 
       await subscriber.start(onIncomingMessage);
-      publisher.publish('', 'Ciao nack');
+      publisher.publish(subscriberOptions.queueName, 'Ciao nack');
     });
 
     it('should send and receive 10 messages', async (done) => {
@@ -170,7 +170,7 @@ describe('PublisherSubscriber', function() {
       await subscriber.start(onIncomingMessage);
       await subscriber.purgeQueue();
       _.times(numMessageToSend, function(n) {
-        publisher.publish('', 'Ciao ' + n);
+        publisher.publish(subscriberOptions.queueName, 'Ciao ' + n);
       });
     });
   });

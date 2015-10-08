@@ -47,7 +47,7 @@ describe('Publisher', function() {
     it('should start and publish', async () => {
       let publisher = new Publisher(publisherOptions);
       await publisher.start();
-      publisher.publish('myRoutingKey', 'Ciao');
+      await publisher.publish('myRoutingKey', 'Ciao');
     });
   });
 
