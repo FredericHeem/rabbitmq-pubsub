@@ -27,7 +27,7 @@ describe('PublisherSubscriber', function() {
   };
 
   function defaultIncomingMessage(message) {
-    //console.log("onIncomingMessage ", message.fields);
+    console.log("onIncomingMessage ", message.fields);
     assert(message.content.length > 0);
     subscriber.ack(message);
   }
@@ -109,8 +109,27 @@ describe('PublisherSubscriber', function() {
       subscriber = new Subscriber(subscriberOptions);
     });
     afterEach(async () => {
-      await subscriber.purgeQueue();
+      //await subscriber.purgeQueue();
       await subscriber.stop();
+    });
+
+    it('should receive the published message with no routing key', async (done) => {
+      debug('should start the mq');
+      function onIncomingMessage(message) {
+        console.log('onIncomingMessage ', message.fields);
+
+        assert(message);
+        assert(message.content);
+        assert(message.content.length > 0);
+        assert.equal(message.fields.routingKey, '');
+        subscriber.ack(message);
+        if(message.fields.redelivered === false){
+          done();
+        }
+      };
+
+      await subscriber.start(onIncomingMessage);
+      await publisher.publish("", 'publish without routing key');
     });
 
     it('should receive the published message', async (done) => {
@@ -128,7 +147,7 @@ describe('PublisherSubscriber', function() {
       };
 
       await subscriber.start(onIncomingMessage);
-      publisher.publish(subscriberOptions.queueName, 'Ciao');
+      await publisher.publish(subscriberOptions.queueName, 'Ciao');
     });
 
     it('should nack the received message', async (done) => {

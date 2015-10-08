@@ -34,9 +34,10 @@ export default class Subscriber {
         await this._channel.assertExchange(options.exchange, options.type, { durable: true });
         log.info('assertQueue name: ', options.queueName);
         let result = await this._channel.assertQueue(options.queueName, { exclusive: false });
-        log.info('assertQueue res ', result);
+        log.info('assertQueue res ', options.key | options.queueName);
         this._queue = result.queue;
-        await this._channel.bindQueue(this._queue, options.exchange, options.key);
+        //let key = options.key ;
+        //await this._channel.bindQueue(this._queue, options.exchange, key);
         log.info('prefetch and consume');
         this._channel.prefetch(1);
         await this._channel.consume(this._queue, onIncomingMessage.bind(this));

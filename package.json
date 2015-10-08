@@ -1,6 +1,6 @@
 {
   "name": "rabbitmq-pubsub",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "RabbitMQ Publisher Subscriber",
   "homepage": "https://github.com/FredericHeem/rabbitmq-pubsub",
   "author": {
