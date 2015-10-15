@@ -13,7 +13,7 @@ export default class Publisher {
             throw new Error('exchange parameter missing in options');
         }
         this._options = _.defaults(options, {
-            type: 'direct',
+            type: 'topic',
             url: 'amqp://localhost'
         });
         log.info('Publisher options:', util.inspect(this._options));

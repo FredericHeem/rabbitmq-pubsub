@@ -17,7 +17,7 @@ export default class Subscriber {
         this._queue;
         this._channel;
         this._options = _.defaults(options, {
-            type: 'direct',
+            type: 'topic',
             url: 'amqp://localhost'
         });
         log.info('Subscriber options:', util.inspect(this._options));
@@ -36,9 +36,13 @@ export default class Subscriber {
         let result = await this._channel.assertQueue(options.queueName, { exclusive: false });
 
         this._queue = result.queue;
-        let routingKey = options.routingKey || options.queueName;
-        log.info('assertQueue key ', routingKey);
-        await this._channel.bindQueue(this._queue, options.exchange, routingKey);
+        let routingKeys = options.routingKeys || [options.queueName];
+        log.info('assertQueue keys ', routingKeys);
+        for(let routingKey of routingKeys){
+            log.info('bindQueue routingKey ', routingKey);
+            await this._channel.bindQueue(this._queue, options.exchange, routingKey);
+        }
+
         log.info('prefetch and consume');
         this._channel.prefetch(1);
         await this._channel.consume(this._queue, onIncomingMessage.bind(this));

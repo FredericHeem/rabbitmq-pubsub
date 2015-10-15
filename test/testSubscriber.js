@@ -23,7 +23,8 @@ describe('PublisherSubscriber', function() {
 
   let subscriberOptions = {
     exchange: 'user',
-    queueName: 'user.new'
+    queueName: 'user',
+    routingKeys:['user.register', 'user.resetpassword']
   };
 
   function defaultIncomingMessage(message) {
@@ -52,7 +53,7 @@ describe('PublisherSubscriber', function() {
     });
     it('no exchange options', done => {
       (function(){
-        new Subscriber({})
+        new Subscriber({});
       }).should.throw();
       done();
     });
@@ -103,7 +104,25 @@ describe('PublisherSubscriber', function() {
     });
   });
 
+  async function publish(routingKey, message, done){
+    function onIncomingMessage(message) {
+      console.log('onIncomingMessage ', message.fields);
 
+      assert(message);
+      assert(message.content);
+      assert(message.content.length > 0);
+      subscriber.ack(message);
+      if(message.fields.redelivered === false){
+        assert.equal(message.fields.routingKey, routingKey);
+        done();
+
+      }
+    };
+
+    await subscriber.start(onIncomingMessage);
+    await publisher.publish(routingKey, message);
+
+  }
   describe('Subscriber', function() {
     beforeEach(async () => {
       subscriber = new Subscriber(subscriberOptions);
@@ -133,21 +152,11 @@ describe('PublisherSubscriber', function() {
     });
 
     it('should receive the published message', async (done) => {
-      debug('should start the mq');
-      function onIncomingMessage(message) {
-        console.log('onIncomingMessage ', message.fields);
+      publish(subscriberOptions.routingKeys[0], 'Ciao new user', done);
+    });
 
-        assert(message);
-        assert(message.content);
-        assert(message.content.length > 0);
-        subscriber.ack(message);
-        if(message.fields.redelivered === false){
-          done();
-        }
-      };
-
-      await subscriber.start(onIncomingMessage);
-      await publisher.publish(subscriberOptions.queueName, 'Ciao');
+    it('should receive the published message', async (done) => {
+      publish(subscriberOptions.routingKeys[1], 'change password', done);
     });
 
     it('should nack the received message', async (done) => {
@@ -164,7 +173,7 @@ describe('PublisherSubscriber', function() {
       };
 
       await subscriber.start(onIncomingMessage);
-      publisher.publish(subscriberOptions.queueName, 'Ciao nack');
+      publisher.publish(subscriberOptions.routingKeys[0], 'Ciao nack');
     });
 
     it('should send and receive 10 messages', async (done) => {
@@ -189,7 +198,7 @@ describe('PublisherSubscriber', function() {
       await subscriber.start(onIncomingMessage);
       await subscriber.purgeQueue();
       _.times(numMessageToSend, function(n) {
-        publisher.publish(subscriberOptions.queueName, 'Ciao ' + n);
+        publisher.publish(subscriberOptions.routingKeys[0], 'Ciao ' + n);
       });
     });
   });
