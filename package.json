@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "babel": "^6.0.15",
+    "babel-cli": "^6.1.1",
     "babel-core": "^6.0.20",
     "babel-eslint": "^4.1.4",
     "babel-loader": "^6.0.1",
@@ -53,8 +54,8 @@
     "postInstall": "./node_modules/.bin/gulp build:production",
     "lint": "./node_modules/.bin/eslint src",
     "pretest": "npm run build",
-    "mocha":"mocha test/test*.js",
-    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha test/*.js",
+    "mocha": "mocha test/test*.js",
+    "test": "babel-node ./node_modules/.bin/isparta cover _mocha test/*.js",
     "coveralls": "./node_modules/.bin/coveralls < coverage/lcov.info",
     "codeclimate": "./node_modules/.bin/codeclimate-test-reporter < coverage/lcov.info",
     "prepublish": "npm run build"
