@@ -1,4 +1,3 @@
-var path = require( 'path' );
 var gulp = require( 'gulp' );
 var runSequence = require( 'run-sequence' );
 var clean = require( 'gulp-clean' );
@@ -13,7 +12,9 @@ gulp.task( 'default', [ 'build' ] );
 
 gulp.task('build', function () {
     return gulp.src(paths.scripts)
-        .pipe(babel({ stage: 1, optional: ["runtime"] }))
+        .pipe(babel({
+            presets: ['es2015-node', 'stage-0']
+        }))
         .pipe(gulp.dest(paths.build));
 });
 
