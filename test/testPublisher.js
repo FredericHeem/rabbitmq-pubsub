@@ -1,4 +1,5 @@
 //var assert = require('assert');
+import should from 'should';
 import  Promise from 'bluebird';
 import 'mochawait';
 
