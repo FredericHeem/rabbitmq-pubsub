@@ -39,6 +39,14 @@ export default class Publisher {
     }
     async publish(key, message) {
         log.info('publish exchange:%s, key:%s, message ', this._options.exchange, key, message);
-        return this._channel.publish(this._options.exchange, key, new Buffer(message));
+        if(this._channel){
+            return this._channel.publish(this._options.exchange, key, new Buffer(message));
+        } else {
+            throw {
+                code: 503,
+                name: "MessageQueueNotAvailable",
+                message: "Message queue channel not available"
+            };
+        }
     }
 }
