@@ -13,7 +13,10 @@ gulp.task( 'default', [ 'build' ] );
 
 gulp.task('build', function () {
     return gulp.src(paths.scripts)
-        .pipe(babel({ stage: 1, optional: ["runtime"] }))
+        .pipe(babel({
+            presets: [ 'es2015', 'stage-1' ],
+            plugins: [ 'transform-runtime' ]
+        }))
         .pipe(gulp.dest(paths.build));
 });
 
