@@ -1,3 +1,3 @@
 
-module.exports.Subscriber = require('./subscriber');
-module.exports.Publisher = require('./publisher');
+module.exports.Subscriber = require('./subscriber')['default'];
+module.exports.Publisher = require('./publisher')['default'];
