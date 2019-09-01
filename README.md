@@ -5,7 +5,7 @@
 A promise based API on top of [ampqlib](http://www.squaremobius.net/amqp.node/).
 
 [![Build Status][travis-image]][travis-url]
-[![Test Coverage](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/badges/coverage.svg)](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/coverage) [![Code Climate](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/badges/gpa.svg)](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub) [![Coverage Status](https://coveralls.io/repos/FredericHeem/rabbitmq-pubsub/badge.svg?branch=master&service=github)](https://coveralls.io/github/FredericHeem/rabbitmq-pubsub?branch=master) [![NPM version][npm-image]][npm-url]
+[![Test Coverage](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/badges/coverage.svg)](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/coverage) [![Code Climate](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub/badges/gpa.svg)](https://codeclimate.com/github/FredericHeem/rabbitmq-pubsub) [![Coverage Status](https://coveralls.io/repos/FredericHeem/rabbitmq-pubsub/badge.svg?branch=master&service=github)](https://coveralls.io/github/FredericHeem/rabbitmq-pubsub?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/FredericHeem/rabbitmq-pubsub.svg)](https://greenkeeper.io/) [![NPM version][npm-image]][npm-url]
 
 [![Dependency Status][daviddm-image]][daviddm-url]
 
